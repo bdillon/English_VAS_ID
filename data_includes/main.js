@@ -1,17 +1,14 @@
-// This is a PCIbex implementation of the English phoneme categorization task from Lab 1 in Colin Phillips' Psycholinguistics I class at the University of Maryland. The The original lab is available at http://www.colinphillips.net/teaching/4237-2/3154-2/
-// We ask that if you use this code, you please credit Colin Phillips' 
-// Psycholinguistics class, at the University of Maryland. See: www.colinphillips.net
+// This is a PCIbex implementation of the English phoneme categorization task, inspired by Lab 1 in Colin Phillips' Psycholinguistics I class.
+// The present version was co-developed by Emily Knick and Brian Dillon in May 2023. It implements the Visual Analog Scale task of Apfelbaum et al. (2022)
 
-// The Russian stimuli were created for
-// Kazanina, Phillips & Idsardi. (2006). The influence of meaning on the perception of speech sounds. PNAS. 103(30), 11381-11386.
-// If you use the Russian stimuli, please cite Kazanina et al (2006).
+// The stimuli were created by Emily Knick. If you use the stimuli, please credit Emily directly.
 
 PennController.ResetPrefix(null) // Shorten command names (keep this)
 PennController.DebugOff()
 
 // Resources are hosted as ZIP files on a distant server
 
-Sequence("instructions","modelD","modelT",
+Sequence("check","instructions","modelD","modelT",
             randomize("main.trial") ,
            randomize("main.trial") ,
            randomize("main.trial") ,
@@ -24,7 +21,50 @@ Sequence("instructions","modelD","modelT",
             randomize("main.trial") ,
              "send" , "end" )
 
+// Headphone check: from https://www.pcibex.net/forums/topic/html-code-with-embedded-script/
+// The Farm's jQuery library is outdated, we need to polyfill a couple methods
+jQuery.prototype.on = function(...args) { return jQuery.prototype.bind.apply(this, args); }
+jQuery.prototype.prop = function(...args) { return jQuery.prototype.attr.apply(this, args); }
+
+// Let's dynamically load the HeadphoneCheck script
+var HeadphoneCheckScriptTag = document.createElement("script");
+HeadphoneCheckScriptTag.src = "https://s3.amazonaws.com/mcd-headphone-check/v1.0/src/HeadphoneCheck.min.js";
+document.head.appendChild( HeadphoneCheckScriptTag );
+
+newTrial(
+    newButton("check", "Click here to do a headphone check before starting")
+        .print()
+    ,
+    // This Canvas will contain the test itself
+    newCanvas("headphonecheck", 500,500)
+        .print()
+    ,
+    // The HeadphoneCheck module fills the element whose id is "hc-container"
+    newFunction( () => getCanvas("headphonecheck")._element.jQueryElement.attr("id", "hc-container") ).call()
+    ,
+    getButton("check")
+        .wait()
+        .remove()
+    ,
+    // Create this Text element, but don't print it just yet
+    newText("failure", "Sorry, you failed the headphone check. Please plug in headphones and try again.")
+    ,
+    // This is where it all happens
+    newFunction( () => {
+        $(document).on('hcHeadphoneCheckEnd', function(event, data) {
+            getCanvas("headphonecheck").remove()._runPromises();
+            if (data.didPass) getButton("dummy").click()._runPromises();
+            else getText("failure").print()._runPromises()
+        });
+        HeadphoneCheck.runHeadphoneCheck() 
+    }).call()
+    ,
+    // This is an invisible button that's clicked in the function above upon success
+    newButton("dummy").wait()
+)
+
 // Welcome page: we do a first calibration here---meanwhile, the resources are preloading
+
 newTrial("instructions",
 
     fullscreen(),
