@@ -8,7 +8,7 @@ PennController.DebugOff()
 
 // Resources are hosted as ZIP files on a distant server
 
-Sequence("instructions","modelD","modelT",
+Sequence("check","instructions","modelD","modelT",
             randomize("main.trial") ,
            randomize("main.trial") ,
            randomize("main.trial") ,
@@ -31,7 +31,7 @@ var HeadphoneCheckScriptTag = document.createElement("script");
 HeadphoneCheckScriptTag.src = "https://s3.amazonaws.com/mcd-headphone-check/v1.0/src/HeadphoneCheck.min.js";
 document.head.appendChild( HeadphoneCheckScriptTag );
 
-newTrial(
+newTrial("check",
     newButton("check", "Click here to do a headphone check before starting")
         .print()
     ,
