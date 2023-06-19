@@ -8,7 +8,7 @@ PennController.DebugOff()
 
 // Resources are hosted as ZIP files on a distant server
 
-Sequence("check","instructions","modelD","modelT",
+Sequence("instructions","modelD","modelT",
             randomize("main.trial") ,
            randomize("main.trial") ,
            randomize("main.trial") ,
