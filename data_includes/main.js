@@ -151,7 +151,7 @@ Template( "English_ID.csv",
         .wait(),
 
     newTimer("deadline", 600000)
-        .start()
+        .start(),
 
     newVar("RT").global().set( v => Date.now() ),
 
