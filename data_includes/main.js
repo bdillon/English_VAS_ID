@@ -8,7 +8,7 @@ PennController.DebugOff()
 
 // Resources are hosted as ZIP files on a distant server
 
-Sequence("check","instructions","modelD","modelT",
+Sequence("instructions","modelD","modelT",
             randomize("main.trial") ,
            randomize("main.trial") ,
            randomize("main.trial") ,
@@ -22,6 +22,8 @@ Sequence("check","instructions","modelD","modelT",
              "send" , "end" )
 
 // Headphone check: from https://www.pcibex.net/forums/topic/html-code-with-embedded-script/
+// By default this is not included in the running order
+
 // The Farm's jQuery library is outdated, we need to polyfill a couple methods
 jQuery.prototype.on = function(...args) { return jQuery.prototype.bind.apply(this, args); }
 jQuery.prototype.prop = function(...args) { return jQuery.prototype.attr.apply(this, args); }
@@ -148,9 +150,6 @@ Template( "English_ID.csv",
         .start()
         .wait(),
         
-    newTimer("deadline", 6000)
-        .start(),
-
     newVar("RT").global().set( v => Date.now() ),
 
     newAudio("cur.trial",currentrow.FILE).play("once"),
@@ -184,11 +183,7 @@ Template( "English_ID.csv",
         .print("center at 50%", "bottom at 80%")
         .callback( getTimer("deadline").stop()  )
         .callback( getVar("RT").set( v => Date.now() - v ))
-        ,
-    
-    getTimer("deadline")
-        .wait()  
-    
+            
     )
   .log( "VOT"   , currentrow.VOT)
   .log( "RT"   ,getVar("RT") )
