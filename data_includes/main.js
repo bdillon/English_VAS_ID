@@ -149,7 +149,7 @@ Template( "English_ID.csv",
     newTimer("wait", 1000)
         .start()
         .wait(),
-
+        
     newTimer("deadline", 600000)
         .start(),
 
@@ -185,11 +185,12 @@ Template( "English_ID.csv",
         .center()
         .print("center at 50%", "bottom at 80%")
         .callback( getTimer("deadline").stop()  )
-        .callback( getVar("RT").set( v => Date.now() - v )),
-
+        .callback( getVar("RT").set( v => Date.now() - v ))
+        ,
+    
     getTimer("deadline")
         .wait()  
-             
+    
     )
   .log( "VOT"   , currentrow.VOT)
   .log( "RT"   ,getVar("RT") )
